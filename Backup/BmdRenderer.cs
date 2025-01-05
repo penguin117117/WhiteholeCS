@@ -17,46 +17,30 @@ namespace Whitehole
 {
     public class BmdRenderer : RendererBase
     {
-        private readonly TextureWrapMode[] texWrapModes = { 
-            TextureWrapMode.ClampToEdge, 
-            TextureWrapMode.Repeat, 
-            TextureWrapMode.MirroredRepeat 
-        };
-
-        private readonly TextureMinFilter[] texMinFilters = { 
-            TextureMinFilter.Nearest, 
-            TextureMinFilter.Linear,                           
-            TextureMinFilter.NearestMipmapNearest, 
-            TextureMinFilter.LinearMipmapNearest,
-            TextureMinFilter.NearestMipmapLinear, 
-            TextureMinFilter.LinearMipmapLinear 
-        };
-
-        private readonly TextureMagFilter[] texMagFilters = { 
-            TextureMagFilter.Nearest, 
-            TextureMagFilter.Linear,
-            TextureMagFilter.Nearest, 
-            TextureMagFilter.Linear,
-            TextureMagFilter.Nearest, 
-            TextureMagFilter.Linear 
-        };
-
         private void UploadTexture(int id)
         {
+            TextureWrapMode[] wrapmodes = { TextureWrapMode.ClampToEdge, TextureWrapMode.Repeat, TextureWrapMode.MirroredRepeat };
+            TextureMinFilter[] minfilters = { TextureMinFilter.Nearest, TextureMinFilter.Linear,
+                                                TextureMinFilter.NearestMipmapNearest, TextureMinFilter.LinearMipmapNearest,
+                                                TextureMinFilter.NearestMipmapLinear, TextureMinFilter.LinearMipmapLinear };
+            TextureMagFilter[] magfilters = { TextureMagFilter.Nearest, TextureMagFilter.Linear,
+                                                TextureMagFilter.Nearest, TextureMagFilter.Linear,
+                                                TextureMagFilter.Nearest, TextureMagFilter.Linear };
+
             Bmd.Texture tex = m_Model.Textures[id];
             int texid = GL.GenTexture();
             m_Textures[id] = texid;
 
-            GL.BindTexture  (TextureTarget.Texture2D, texid);
-            GL.TexParameter (TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel,   tex.MipmapCount - 1);
-            GL.TexParameter (TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)texMinFilters[tex.MinFilter]);
-            GL.TexParameter (TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)texMagFilters[tex.MagFilter]);
-            GL.TexParameter (TextureTarget.Texture2D, TextureParameterName.TextureWrapS,     (int)texWrapModes[tex.WrapS]);
-            GL.TexParameter (TextureTarget.Texture2D, TextureParameterName.TextureWrapT,     (int)texWrapModes[tex.WrapT]);
+            GL.BindTexture(TextureTarget.Texture2D, texid);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, tex.MipmapCount - 1);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minfilters[tex.MinFilter]);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magfilters[tex.MagFilter]);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmodes[tex.WrapS]);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmodes[tex.WrapT]);
 
             PixelInternalFormat ifmt;
             PixelFormat fmt;
-
             switch (tex.Format)
             {
                 case 0:
@@ -361,10 +345,7 @@ namespace Whitehole
         {
             m_Model = model;
 
-            //openGLのエクステンションを取得
             string[] extensions = GL.GetString(StringName.Extensions).Split(' ');
-            
-            //シェーダー持ってるかのチェック
             m_HasShaders = extensions.Contains("GL_ARB_shading_language_100") &&
                 extensions.Contains("GL_ARB_shader_objects") &&
                 extensions.Contains("GL_ARB_vertex_shader") &&
